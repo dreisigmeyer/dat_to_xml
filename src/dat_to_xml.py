@@ -142,3 +142,7 @@ def convert_to_xml(dat_files):
                         dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
                 else:
                     dict_for_xml['patent'][parent_section][section][-1][subsection] += text
+        subprocess.run([
+            'tar', '-cjf', out_directory + '.tar.bz2',
+            '--directory', xml_path, grant_yr,
+            '--remove-files'])
