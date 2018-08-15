@@ -1,2 +1,2 @@
 python -m src
-rm -rf unzipped_files/*
+# rm -rf unzipped_files/*

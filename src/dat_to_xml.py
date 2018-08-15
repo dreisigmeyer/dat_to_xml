@@ -45,16 +45,6 @@ def reset_sections():
         SECTIONS[key]['active'] = False
 
 
-def create_xml_file(dict_for_xml, wku, out_directory):
-    """
-    Print the dictionary out to an xml file
-    """
-    text_to_file = xmltodict.unparse(dict_for_xml, pretty=True)
-    out_file = out_directory + wku + '.xml'
-    with open(out_file, "w") as xml_file:
-        xml_file.write(text_to_file)
-
-
 def new_section(test_str):
     """
     Test to see if a new section of a patent is reached
@@ -66,6 +56,7 @@ def new_section(test_str):
             reset_sections()
         parent = SECTIONS[test_str]['parent']
         SECTIONS['section'] = test_str
+        SECTIONS['subsection'] = ''
         if not SECTIONS[test_str]['active']:
             SECTIONS['parent_section'] = parent
             SECTIONS[test_str]['active'] = True
@@ -77,7 +68,7 @@ def new_section(test_str):
         return False, False  # not a new section
 
 
-def subsectiontion(test_str):
+def new_subsection(test_str):
     """
     To keep track of which subsection we're in for multiline data.
     If it is a subsection the first three characters in test_str will
@@ -95,6 +86,52 @@ def subsectiontion(test_str):
         return False, text
 
 
+def fix_subsection(section):
+    """
+    Sometimes there's no subsection: this fixes that.
+    """
+    global SECTIONS
+    sections_with_PAx = ['OREF', 'ABST', 'GOVT', 'PARN', 'BSUM', 'DRWD', 'DETD', 'DCLM']
+    if section in sections_with_PAx:
+        SECTIONS['subsection'] = 'PAL'  # This PAx is as good as any?
+
+
+def iconvit_damnit(filename):
+    """
+    Run iconv on files that are being difficult.
+    """
+    iconv_args = [
+        'iconv',
+        '-f utf-8',
+        '-t utf-8',
+        '-c',
+        '-o', filename + '.holder',
+        filename]
+    subprocess.run(iconv_args)
+    mv_args = ['mv', filename + '.holder', filename]
+    subprocess.run(mv_args)
+
+
+def sedit_damnit(filename):
+    """
+    Some dat files have useless lines to make my life difficult.
+    """
+    sed_args = '''
+        sed -i -r "/HHHHHT.*APS1.*ISSUE.*/d" {0}
+        '''.format(filename).strip()
+    subprocess.run(sed_args, shell=True)
+
+
+def create_xml_file(dict_for_xml, wku, out_directory):
+    """
+    Print the dictionary out to an xml file
+    """
+    text_to_file = xmltodict.unparse(dict_for_xml, pretty=True)
+    out_file = out_directory + wku + '.xml'
+    with open(out_file, "w") as xml_file:
+        xml_file.write(text_to_file)
+
+
 def convert_to_xml(dat_files):
     """
     """
@@ -110,39 +147,57 @@ def convert_to_xml(dat_files):
         split_args = ['./bash_functions.sh', 'unzip_dat_file', dat_file]
         subprocess.run(split_args)
         unzipped_file = unzipped_path + grant_yr + '.dat'
+        iconvit_damnit(unzipped_file)
+        sedit_damnit(unzipped_file)
         dict_for_xml = {}
         wku = ''
         with open(unzipped_file) as f:
             for in_line in f:
-                parent, start_section = new_section(in_line[:4])
-                start_subsection, text = subsectiontion(in_line)
-                parent_section = SECTIONS['parent_section']
-                section = SECTIONS['section']
-                subsection = SECTIONS['subsection']
-                if parent:  # take care of new or revisited sections
-                    if parent_section == 'patent':
-                        if dict_for_xml:
-                            create_xml_file(dict_for_xml, wku, out_directory)
-                        wku = ''
-                        dict_for_xml = {}
-                        dict_for_xml['patent'] = {}
-                    elif start_section:  # new section so a new list
-                        dict_for_xml['patent'][parent_section] = {section: []}
-                        dict_for_xml['patent'][parent_section][section].append({})
-                    else:  # been here before so only need a new dictionary
-                        dict_for_xml['patent'][parent_section][section].append({})
-                    continue  # no data to place into the XML file
-                # By construction we'll always be working with the last element in a list
-                if start_subsection:
-                    if parent_section == 'patent':  # putting information into the XML file
-                        if subsection == 'WKU':
-                            wku = text.strip()
-                        dict_for_xml['patent'][subsection] = text.strip()
+                try:
+                    parent, start_section = new_section(in_line[:4])
+                    parent_section = SECTIONS['parent_section']
+                    section = SECTIONS['section']
+                    if parent:  # take care of new or revisited sections
+                        if parent_section == 'patent':
+                            if dict_for_xml:
+                                create_xml_file(dict_for_xml, wku, out_directory)
+                            wku = ''
+                            dict_for_xml = {}
+                            dict_for_xml['patent'] = {}
+                        elif start_section:  # new section so a new list
+                            dict_for_xml['patent'][parent_section] = {section: []}
+                            dict_for_xml['patent'][parent_section][section].append({})
+                        else:  # been here before so only need a new dictionary
+                            dict_for_xml['patent'][parent_section][section].append({})
+                        continue  # no data to place into the XML file
+                    # By construction we'll always be working with the last element in a list
+                    start_subsection, text = new_subsection(in_line)
+                    subsection = SECTIONS['subsection']
+                    if not subsection:  # There should be a subsection but there's not...
+                        fix_subsection(section)
+                        subsection = SECTIONS['subsection']
+                        start_subsection = True
+                        print('Problem with patent ' + wku + ' : ' + in_line.rstrip())
+                        # continue
+                    if start_subsection:
+                        if parent_section == 'patent':  # putting information into the XML file
+                            if subsection == 'WKU':
+                                wku = text.strip()
+                            dict_for_xml['patent'][subsection] = text.strip()
+                        else:
+                            dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
                     else:
-                        dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
-                else:
-                    dict_for_xml['patent'][parent_section][section][-1][subsection] += text
-        subprocess.run([
-            'tar', '-cjf', out_directory + '.tar.bz2',
-            '--directory', xml_path, grant_yr,
-            '--remove-files'])
+                        if parent_section == 'patent':
+                            dict_for_xml['patent'][subsection] += text
+                        else:
+                            dict_for_xml['patent'][parent_section][section][-1][subsection] += text
+                except Exception as e:
+                    print('parent_section : ' + parent_section)
+                    print('section : ' + section)
+                    print('subsection : ' + subsection)
+                    print(str(e) + ' : ' + in_line.rstrip())
+                    raise e
+        # subprocess.run([
+        #     'tar', '-cjf', out_directory + '.tar.bz2',
+        #     '--directory', xml_path, grant_yr,
+        #     '--remove-files'])
