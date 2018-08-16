@@ -130,6 +130,11 @@ def create_xml_file(dict_for_xml, wku, out_directory):
     out_file = out_directory + wku + '.xml'
     with open(out_file, "w") as xml_file:
         xml_file.write(text_to_file)
+    sed_args = '''
+        sed -i '2i\\<!DOCTYPE early_patent SYSTEM "early_patent.dtd">\\' {0}
+        '''.format(out_file).strip()
+    print(sed_args)
+    subprocess.run(sed_args, shell=True)
 
 
 def convert_to_xml(dat_files):
@@ -177,12 +182,12 @@ def convert_to_xml(dat_files):
                         fix_subsection(section)
                         subsection = SECTIONS['subsection']
                         start_subsection = True
-                        print('Problem with patent ' + wku + ' : ' + in_line.rstrip())
-                        # continue
+                        if not subsection:
+                            print('Problem with patent ' + wku + ' : ' + in_line.rstrip())
                     if start_subsection:
                         if parent_section == 'patent':  # putting information into the XML file
                             if subsection == 'WKU':
-                                wku = text.strip()
+                                wku = text.strip()[:-1]  # there's a check digit at the end
                             dict_for_xml['patent'][subsection] = text.strip()
                         else:
                             dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
