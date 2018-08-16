@@ -133,7 +133,6 @@ def create_xml_file(dict_for_xml, wku, out_directory):
     sed_args = '''
         sed -i '2i\\<!DOCTYPE early_patent SYSTEM "early_patent.dtd">\\' {0}
         '''.format(out_file).strip()
-    print(sed_args)
     subprocess.run(sed_args, shell=True)
 
 
@@ -202,7 +201,7 @@ def convert_to_xml(dat_files):
                     print('subsection : ' + subsection)
                     print(str(e) + ' : ' + in_line.rstrip())
                     raise e
-        # subprocess.run([
-        #     'tar', '-cjf', out_directory + '.tar.bz2',
-        #     '--directory', xml_path, grant_yr,
-        #     '--remove-files'])
+        subprocess.run([
+            'tar', '-cjf', out_directory + '.tar.bz2',
+            '--directory', xml_path, grant_yr,
+            '--remove-files'])
