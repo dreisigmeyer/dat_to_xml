@@ -1,0 +1,177 @@
+<!--
+Created by David W Dreisigmeyer 16 AUG 18
+
+Elements taken from the "Green Book":
+https://bulkdata.uspto.gov/data/patent/grant/redbook/fulltext/1976/PatentFullTextAPSDoc_GreenBook.pdf
+available from https://www.uspto.gov/learning-and-resources/xml-resources
+-->
+
+<!ELEMENT patent 
+	(
+		WKU <!-- patent number -->
+		,SRC <!-- series code -->
+		,APN <!-- application number -->
+		,APT <!-- application type -->
+		,PBL? <!-- publication level -->
+		,ART <!-- art unit -->
+		,APD <!-- application filing data -->
+		,TTL <!-- title of invention -->
+		,ISD? <!-- issue date -->
+		,NCL <!-- number of claims -->
+		,ECL <!-- exemplary claim number(s) -->
+		,EXA? <!-- assistant examiner -->
+		,EXP <!-- primary examiner -->
+		,NDR? <!-- number of drawing sheets -->
+		,NFG? <!-- number of figures -->
+		,DCD? <!-- disclaimer date -->
+		,NPS? <!-- number of pages of specifications -->
+		,TRM? <!-- term of patent -->
+		,inventors <!-- information of the inventor(s) -->
+		,assignees? <!-- data identifying the assignee(s) of an invention at the time of issue -->
+		,foreign_prior? <!-- data indicating in which foreign countries an application claims priority -->
+		,reissue? <!-- data describing the reissue of a patent -->
+		,us_related? <!-- coded version of parent case/continuation data of prior applications related to this patent -->
+		,classifications <!-- US and international classificatioin codes for the patent -->
+		,us_references? <!-- data identifying patents which are referenced as prior art -->
+		,foreign_references? <!-- data identifying foreign patents cited as references -->
+		,other_references? <!-- other references cited as prior art -->
+		,legal_information? <!-- data describing the attorneys or representatives representing an applicant's patent -->
+		,pct_information? <!-- descriptive data for related PCT information -->
+		,abstract? <!-- abstract section from the patent -->
+		,government_interest? <!-- description of the government's interest in the patent -->
+		,parent_case? <!-- text of the parent case/continuation data of prior applications related to this patent -->
+		,brief_summary <!-- summary description of the invention -->
+		,drawing_description? <!-- identifies the drawing(s) presented in the patent -->
+		,detailed_description? <!-- detailed technical specification from a patent -->
+		,claims_information <!-- claim(s) information from the patent -->
+		,design_claim? <!-- claim information for a design patent -->
+	)
+>
+
+<!-- inventor information -->
+<!ELEMENT inventors (INVT+)>
+<!ELEMENT INVT (NAM,STR?,CTY,STA?,CNT?,ZIP?,R47?,ITX?)>
+<!-- assignee information -->
+<!ELEMENT assignees (ASSG+)>
+<!ELEMENT ASSG (NAM,CTY?,STA?,CNT?,ZIP?,COD,ITX?)>
+<!-- foreign priority information -->
+<!ELEMENT foreign_prior (PRIR+)>
+<!ELEMENT PRIR (CNT,APD,APN)>
+<!-- reissue information -->
+<!ELEMENT reissue (REIS)>
+<!ELEMENT REIS (COD,APN,APD,PNO,ISD)>
+<!-- related US application data -->
+<!ELEMENT us_related (RLAP+)>
+<!ELEMENT RLAP (COD,APN,APD?,PSC,PNO?,ISD?)>
+<!-- related US application data -->
+<!ELEMENT classifications (CLAS+)>
+<!ELEMENT CLAS (OCL,XCL?,UCL?,DCL?,EDF?,ICL?,FSC?,FSS?)>
+<!-- US references -->
+<!ELEMENT us_references (UREF+)>
+<!ELEMENT UREF (PNO,ISD,NAM,OCL?,XCL?,UCL?)>
+<!-- foreign references -->
+<!ELEMENT foreign_references (FREF+)>
+<!ELEMENT FREF (PNO,ISD,CNT,OCL)>
+<!-- other references -->
+<!ELEMENT other_references (OREF+)>
+<!ELEMENT OREF (PAL)>
+<!-- other references -->
+<!ELEMENT legal_information (LREP+)>
+<!ELEMENT LREP (FRM?,FR2?,AAT?,AGT?,ATT?,REG?,NAM?,STR?,CTY?,STA?,CNT?,ZIP?)>
+<!-- other references -->
+<!ELEMENT pct_information (PCTA+)>
+<!ELEMENT PCTA (PCN,PD1,PD2,PD3,PCP?,PCD?)>
+<!-- abstract -->
+<!ELEMENT abstract (ABST)>
+<!ELEMENT ABST (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- government interest(s) -->
+<!ELEMENT government_interest (GOVT+)>
+<!ELEMENT GOVT (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- parent case(s) -->
+<!ELEMENT parent_case (PARN+)>
+<!ELEMENT PARN (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- brief summary -->
+<!ELEMENT brief_summary (BSUM)>
+<!ELEMENT BSUM (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- drawing description(s) -->
+<!ELEMENT drawing_description (DRWD+)>
+<!ELEMENT DRWD (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- detailed description -->
+<!ELEMENT detailed_description (DETD+)>
+<!ELEMENT DETD (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+<!-- claims information -->
+<!ELEMENT claims_information (CLMS+)>
+<!ELEMENT CLMS (STM?,NUM,(PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*)>
+<!-- design claim -->
+<!ELEMENT design_claim (DCLM+)>
+<!ELEMENT DCLM (PA0|PA1|PA2|PA3|PA4|PA5|PAC|PAL|PAR|FNT|TBL|TBL3|EQU)*>
+
+
+<!-- paragraph elements -->
+<!ELEMENT FNT (#PCDATA)> <!-- footnote with all lines left justified  -->
+<!ELEMENT PA0 (#PCDATA)> <!-- paragraph with first line indented 0 spaces and all remaining lines indented 1 space  -->
+<!ELEMENT PA1 (#PCDATA)> <!-- paragraph with first line indented 1 spaces and all remaining lines indented 2 space  -->
+<!ELEMENT PA2 (#PCDATA)> <!-- paragraph with first line indented 2 spaces and all remaining lines indented 3 space  -->
+<!ELEMENT PA3 (#PCDATA)> <!-- paragraph with first line indented 3 spaces and all remaining lines indented 4 space  -->
+<!ELEMENT PA4 (#PCDATA)> <!-- paragraph with first line indented 4 spaces and all remaining lines indented 5 space  -->
+<!ELEMENT PA5 (#PCDATA)> <!-- paragraph with first line indented 5 spaces and all remaining lines indented 6 space  -->
+<!ELEMENT PAC (#PCDATA)> <!-- paragraph with all lines centered -->
+<!ELEMENT PAL (#PCDATA)> <!-- paragraph with all lines left justified -->
+<!ELEMENT PAR (#PCDATA)> <!-- paragraph with indented first line and all remaining lines left justified -->
+<!ELEMENT TBL (#PCDATA)> <!-- a table -->
+<!ELEMENT TBL3 (#PCDATA)> <!-- three-column table -->
+<!ELEMENT EQU (#PCDATA)> <!-- in-line equation -->
+
+
+<!-- data elements -->
+<!ELEMENT AAT (#PCDATA)> <!-- associate attorney name -->
+<!ELEMENT AGT (#PCDATA)> <!-- agent's name -->
+<!ELEMENT APD (#PCDATA)> <!-- application data -->
+<!ELEMENT APN (#PCDATA)> <!-- application number -->
+<!ELEMENT APT (#PCDATA)> <!-- application type -->
+<!ELEMENT ART (#PCDATA)> <!-- art unit -->
+<!ELEMENT ATT (#PCDATA)> <!-- attorney name -->
+<!ELEMENT CNT (#PCDATA)> <!-- country -->
+<!ELEMENT COD (#PCDATA)> <!-- assignee type/reissue/parent code -->
+<!ELEMENT CTY (#PCDATA)> <!-- city -->
+<!ELEMENT DCD (#PCDATA)> <!-- disclaimer date -->
+<!ELEMENT DCL (#PCDATA)> <!-- digest reference -->
+<!ELEMENT ECL (#PCDATA)> <!-- exemplary claim number(s) -->
+<!ELEMENT EDF (#PCDATA)> <!-- edition field -->
+<!ELEMENT EXA (#PCDATA)> <!-- assistant examiner -->
+<!ELEMENT EXP (#PCDATA)> <!-- principle examiner -->
+<!ELEMENT FR2 (#PCDATA)> <!-- principle attorney name -->
+<!ELEMENT FRM (#PCDATA)> <!-- legal firm name -->
+<!ELEMENT FSC (#PCDATA)> <!-- field of search class -->
+<!ELEMENT FSS (#PCDATA)> <!-- field of search subclasses -->
+<!ELEMENT ICL (#PCDATA)> <!-- international classification -->
+<!ELEMENT ISD (#PCDATA)> <!-- issue date -->
+<!ELEMENT ITX (#PCDATA)> <!-- inventor descriptive text -->
+<!ELEMENT NAM (#PCDATA)> <!-- name -->
+<!ELEMENT NCL (#PCDATA)> <!-- number of claims -->
+<!ELEMENT NDR (#PCDATA)> <!-- number of drawing sheets -->
+<!ELEMENT NFG (#PCDATA)> <!-- number of figures -->
+<!ELEMENT NPS (#PCDATA)> <!-- number of pages of specifications -->
+<!ELEMENT NUM (#PCDATA)> <!-- claims number -->
+<!ELEMENT OCL (#PCDATA)> <!-- US/foreign classification -->
+<!ELEMENT PBL (#PCDATA)> <!-- publication level -->
+<!ELEMENT PCD (#PCDATA)> <!-- CT publication data -->
+<!ELEMENT PCN (#PCDATA)> <!-- PCT number -->
+<!ELEMENT PCP (#PCDATA)> <!-- PCT publication number -->
+<!ELEMENT PD1 (#PCDATA)> <!-- PCT 371 data -->
+<!ELEMENT PD2 (#PCDATA)> <!-- PCT 102(e) data -->
+<!ELEMENT PD3 (#PCDATA)> <!-- PCT filing data -->
+<!ELEMENT PNO (#PCDATA)> <!-- patent number -->
+<!ELEMENT PSC (#PCDATA)> <!-- patent status code -->
+<!ELEMENT R47 (#PCDATA)> <!-- rule 47 indicator -->
+<!ELEMENT REG (#PCDATA)> <!-- registration number -->
+<!ELEMENT SRC (#PCDATA)> <!-- series code -->
+<!ELEMENT STA (#PCDATA)> <!-- state -->
+<!ELEMENT STM (#PCDATA)> <!-- claims statement -->
+<!ELEMENT STR (#PCDATA)> <!-- street -->
+<!ELEMENT TRM (#PCDATA)> <!-- term of patent -->
+<!ELEMENT TTL (#PCDATA)> <!-- title of invention -->
+<!ELEMENT UCL (#PCDATA)> <!-- unofficial reference -->
+<!ELEMENT WKU (#PCDATA)> <!-- patent number -->
+<!ELEMENT XCL (#PCDATA)> <!-- cross reference -->
+<!ELEMENT ZIP (#PCDATA)> <!-- zip -->

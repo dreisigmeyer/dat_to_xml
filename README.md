@@ -8,6 +8,6 @@ https://www.anaconda.com/
 The dat files can be automatically downloaded by running  
 `./get_uspto_data.sh`  
 The XML files are created using  
-`nohup ./run_it.sh &`
+`nohup ./run_it.sh &`  
 The output files are in the __xml\_files__ directory.
 Each zipped folder contains the individual patent files named as _prdnnumb.xml_.

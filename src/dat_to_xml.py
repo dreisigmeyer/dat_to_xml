@@ -25,7 +25,7 @@ SECTIONS = {
     'PARN': {'parent': 'parent_case', 'active': False},
     'BSUM': {'parent': 'brief_summary', 'active': False},
     'DRWD': {'parent': 'drawing_description', 'active': False},
-    'DETD': {'parent': 'detail_description', 'active': False},
+    'DETD': {'parent': 'detailed_description', 'active': False},
     'CLMS': {'parent': 'claims_information', 'active': False},
     'DCLM': {'parent': 'design_claim', 'active': False}
 }
@@ -131,7 +131,7 @@ def create_xml_file(dict_for_xml, wku, out_directory):
     with open(out_file, "w") as xml_file:
         xml_file.write(text_to_file)
     sed_args = '''
-        sed -i '2i\\<!DOCTYPE early_patent SYSTEM "early_patent.dtd">\\' {0}
+        sed -i '2i\\<!DOCTYPE patent SYSTEM "early_patent.dtd">\\' {0}
         '''.format(out_file).strip()
     subprocess.run(sed_args, shell=True)
 
