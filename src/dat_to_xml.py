@@ -1,7 +1,15 @@
+from lxml import etree
 import os
 import shutil
 import subprocess
 import xmltodict
+
+
+magic_validator = etree.XMLParser(
+    dtd_validation=True,
+    resolve_entities=False,
+    encoding='utf-8',
+    recover=True)
 
 
 SECTIONS = {
@@ -122,24 +130,35 @@ def sedit_damnit(filename):
     subprocess.run(sed_args, shell=True)
 
 
-def create_xml_file(dict_for_xml, wku, out_directory):
+def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
     """
     Print the dictionary out to an xml file
     """
+    inventor_path = './/inventors'
     text_to_file = xmltodict.unparse(dict_for_xml, pretty=True)
     out_file = out_directory + wku + '.xml'
+    mod_out_file = mod_out_directory + wku + '.xml'
     with open(out_file, "w") as xml_file:
         xml_file.write(text_to_file)
     sed_args = '''
         sed -i '2i\\<!DOCTYPE patent SYSTEM "early_patent.dtd">\\' {0}
         '''.format(out_file).strip()
     subprocess.run(sed_args, shell=True)
+    try:
+        tree = etree.parse(out_file, parser=magic_validator)  # valid XML?
+    except Exception as e:
+        print('===> Invalid XML file for ' + wku)
+        print(e)
+    root = tree.getroot()
+    root.find(inventor_path).clear()
+    tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
 
 
 def convert_to_xml(dat_files):
     """
     """
     xml_path = 'xml_files/'
+    modified_xml_path = 'modified_xml_files/'
     unzipped_path = 'unzipped_files/'
     for dat_file in dat_files:
         file_name = os.path.basename(dat_file)
@@ -148,6 +167,10 @@ def convert_to_xml(dat_files):
         shutil.rmtree(out_directory, ignore_errors=True)
         os.mkdir(out_directory)
         out_directory += '/'
+        mod_out_directory = modified_xml_path + grant_yr
+        shutil.rmtree(mod_out_directory, ignore_errors=True)
+        os.mkdir(mod_out_directory)
+        mod_out_directory += '/'
         split_args = ['./bash_functions.sh', 'unzip_dat_file', dat_file]
         subprocess.run(split_args)
         unzipped_file = unzipped_path + grant_yr + '.dat'
@@ -164,7 +187,7 @@ def convert_to_xml(dat_files):
                     if parent:  # take care of new or revisited sections
                         if parent_section == 'patent':
                             if dict_for_xml:
-                                create_xml_file(dict_for_xml, wku, out_directory)
+                                create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory)
                             wku = ''
                             dict_for_xml = {}
                             dict_for_xml['patent'] = {}
@@ -202,6 +225,10 @@ def convert_to_xml(dat_files):
                     print(str(e) + ' : ' + in_line.rstrip())
                     raise e
         subprocess.run([
-            'tar', '-cjf', xml_path + grant_yr + '.tar.bz2',
+            'tar', '-cjf', xml_path + 'pgb' + grant_yr + '.tar.bz2',
             '--directory', xml_path, grant_yr,
+            '--remove-files'])
+        subprocess.run([
+            'tar', '-cjf', modified_xml_path + 'pgb' + grant_yr + '.tar.bz2',
+            '--directory', modified_xml_path, grant_yr,
             '--remove-files'])
