@@ -202,6 +202,6 @@ def convert_to_xml(dat_files):
                     print(str(e) + ' : ' + in_line.rstrip())
                     raise e
         subprocess.run([
-            'tar', '-cjf', out_directory + '.tar.bz2',
+            'tar', '-cjf', xml_path + grant_yr + '.tar.bz2',
             '--directory', xml_path, grant_yr,
             '--remove-files'])
