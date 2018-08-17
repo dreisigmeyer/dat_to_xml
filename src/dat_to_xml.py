@@ -130,6 +130,15 @@ def sedit_damnit(filename):
     subprocess.run(sed_args, shell=True)
 
 
+def copy_dtds(dest_dir):
+    """
+    copies the DTD files
+    """
+    dtd_path = 'DTDs/*'
+    cp_args = 'cp -r {0} {1}'.format(dtd_path, dest_dir).strip()
+    subprocess.run(cp_args, shell=True)
+
+
 def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
     """
     Print the dictionary out to an xml file
@@ -149,9 +158,13 @@ def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
     except Exception as e:
         print('===> Invalid XML file for ' + wku)
         print(e)
-    root = tree.getroot()
-    root.find(inventor_path).clear()
-    tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
+    try:
+        root = tree.getroot()
+        root.find(inventor_path).clear()
+        tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
+    except Exception as e:
+        print("===> Couldn't remove inventors on patent " + wku)
+        print(e)
 
 
 def convert_to_xml(dat_files):
@@ -171,6 +184,8 @@ def convert_to_xml(dat_files):
         shutil.rmtree(mod_out_directory, ignore_errors=True)
         os.mkdir(mod_out_directory)
         mod_out_directory += '/'
+        copy_dtds(out_directory)
+        copy_dtds(mod_out_directory)
         split_args = ['./bash_functions.sh', 'unzip_dat_file', dat_file]
         subprocess.run(split_args)
         unzipped_file = unzipped_path + grant_yr + '.dat'
