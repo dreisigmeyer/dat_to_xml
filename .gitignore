@@ -1,3 +1,6 @@
+*.sublime-project
+*.sublime-workspace
+
 *.zip
 *.dat
 src/__pycache__/
