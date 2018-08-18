@@ -160,8 +160,12 @@ def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
         print(e)
     try:
         root = tree.getroot()
-        root.find(inventor_path).clear()
-        tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
+        inventors_on_patent = root.find(inventor_path)
+        if inventors_on_patent is None:  # no inventors to clear
+            tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
+        else:
+            inventors_on_patent.clear()
+            tree.write(mod_out_file, encoding='UTF-8', xml_declaration=True)
     except Exception as e:
         print("===> Couldn't remove inventors on patent " + wku)
         print(e)
