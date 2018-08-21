@@ -9,5 +9,6 @@ The dat files can be automatically downloaded by running
 `./get_uspto_data.sh`  
 The XML files are created using  
 `nohup ./run_it.sh &`  
-The output files are in the __xml\_files__ directory.
+The output files are in the **xml_files** directory.
 Each zipped folder contains the individual patent files named as _prdnnumb.xml_.
+The directory **modified_xml_files** conatins the same files with the inventor information removed.
