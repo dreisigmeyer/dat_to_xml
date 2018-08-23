@@ -118,15 +118,15 @@ def iconvit_damnit(filename):
     subprocess.run(iconv_args)
     mv_args = ['mv', filename + '.holder', filename]
     subprocess.run(mv_args)
+    sed_args = 'sed -i "s/\x1a//g" {0}'.format(filename)  # Die SUB die
+    subprocess.run(sed_args, shell=True)
 
 
 def sedit_damnit(filename):
     """
     Some dat files have useless lines to make my life difficult.
     """
-    sed_args = '''
-        sed -i -r "/HHHHHT.*APS1.*ISSUE.*/d" {0}
-        '''.format(filename).strip()
+    sed_args = 'sed -i -r "/HHHHHT.*APS1.*ISSUE.*/d" {0}'.format(filename)
     subprocess.run(sed_args, shell=True)
 
 
@@ -228,8 +228,13 @@ def convert_to_xml(dat_files):
                     if start_subsection:
                         if parent_section == 'patent':  # putting information into the XML file
                             if subsection == 'WKU':
-                                wku = text.strip()[:-1]  # there's a check digit at the end
-                            dict_for_xml['patent'][subsection] = text.strip()
+                                wku = text.strip()[:8]  # there's a check digit at the end
+                                dict_for_xml['patent']['WKU'] = wku
+                            elif subsection == 'APN':
+                                apn = text.strip()[:6]  # there's another check digit
+                                dict_for_xml['patent']['APN'] = apn
+                            else:
+                                dict_for_xml['patent'][subsection] = text.strip()
                         else:
                             dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
                     else:
