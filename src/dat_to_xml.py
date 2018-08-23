@@ -106,7 +106,7 @@ def fix_subsection(section):
 
 def iconvit_damnit(filename):
     """
-    Run iconv on files that are being difficult.
+    Run iconv and sed on files that are being difficult.
     """
     iconv_args = [
         'iconv',
@@ -118,7 +118,7 @@ def iconvit_damnit(filename):
     subprocess.run(iconv_args)
     mv_args = ['mv', filename + '.holder', filename]
     subprocess.run(mv_args)
-    sed_args = 'sed -i "s/\x1a//g" {0}'.format(filename)  # Die SUB die
+    sed_args = 'sed -i "s/\(\x1a\|\x01\)//g" {0}'.format(filename)  # Die SUB die
     subprocess.run(sed_args, shell=True)
 
 
