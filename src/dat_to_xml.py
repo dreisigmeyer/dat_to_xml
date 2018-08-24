@@ -180,11 +180,11 @@ def convert_to_xml(dat_files):
     for dat_file in dat_files:
         file_name = os.path.basename(dat_file)
         grant_yr = os.path.splitext(file_name)[0]
-        out_directory = xml_path + grant_yr
+        out_directory = xml_path + 'pgb' + grant_yr
         shutil.rmtree(out_directory, ignore_errors=True)
         os.mkdir(out_directory)
         out_directory += '/'
-        mod_out_directory = modified_xml_path + grant_yr
+        mod_out_directory = modified_xml_path + 'pgb' + grant_yr
         shutil.rmtree(mod_out_directory, ignore_errors=True)
         os.mkdir(mod_out_directory)
         mod_out_directory += '/'
