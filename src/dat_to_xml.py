@@ -235,6 +235,14 @@ def convert_to_xml(dat_files):
                                 dict_for_xml['patent']['APN'] = apn
                             else:
                                 dict_for_xml['patent'][subsection] = text.strip()
+                        elif parent_section == 'inventors' and subsection == 'NAM':
+                            dict_for_xml['patent']['inventors']['INVT'][-1]['NAM'] = text.strip()
+                            try:  # split NAM to last and first name
+                                ln, fn = text.split(';')
+                                dict_for_xml['patent']['inventors']['INVT'][-1]['LN'] = ln.strip()
+                                dict_for_xml['patent']['inventors']['INVT'][-1]['FN'] = fn.strip()
+                            except ValueError:  # possibly not a person
+                                dict_for_xml['patent']['inventors']['INVT'][-1]['NAM'] = text.strip()
                         else:
                             dict_for_xml['patent'][parent_section][section][-1][subsection] = text.strip()
                     else:
