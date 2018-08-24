@@ -3,5 +3,5 @@
 
 *.zip
 *.dat
-src/__pycache__/
+__pycache__/
 nohup*
