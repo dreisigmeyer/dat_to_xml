@@ -1,15 +1,9 @@
 from lxml import etree
 import os
+from shared_python_code.xml_paths import magic_validator
 import shutil
 import subprocess
 import xmltodict
-
-
-magic_validator = etree.XMLParser(
-    dtd_validation=True,
-    resolve_entities=False,
-    encoding='utf-8',
-    recover=True)
 
 
 SECTIONS = {
