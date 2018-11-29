@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This will download the data files from the USPTO
+
 for YEAR in {1976..2001}
 do
     COUNT=`ls dat_files/"$YEAR".zip 2> /dev/null | wc -l`

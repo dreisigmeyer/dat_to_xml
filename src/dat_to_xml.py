@@ -6,6 +6,7 @@ import subprocess
 import xmltodict
 
 
+# This keeps track of where we are in the dat and XML files.
 SECTIONS = {
     'parent_section': '',
     'section': '',
@@ -50,6 +51,8 @@ def reset_sections():
 def new_section(test_str):
     """
     Test to see if a new section of a patent is reached
+
+    test_str -- the potential label for a new section
     """
     global SECTIONS
     test_str = test_str.strip()
@@ -77,6 +80,8 @@ def new_subsection(test_str):
     determine it.  The 4th and 5th characters are blank.  The 6th
     character is also blank for a continued subsection (like the abstract)
     but we'll send it back for easy concatenation.
+
+    test_str -- the potential label for a new subsection
     """
     global SECTIONS
     subsec = test_str[:3].strip()
@@ -91,6 +96,8 @@ def new_subsection(test_str):
 def fix_subsection(section):
     """
     Sometimes there's no subsection: this fixes that.
+
+    section -- the current section we're in
     """
     global SECTIONS
     sections_with_PAx = ['OREF', 'ABST', 'GOVT', 'PARN', 'BSUM', 'DRWD', 'DETD', 'DCLM']
@@ -101,6 +108,8 @@ def fix_subsection(section):
 def iconvit_damnit(filename):
     """
     Run iconv and sed on files that are being difficult.
+
+    filename -- the file to run iconv on
     """
     iconv_args = [
         'iconv',
@@ -119,6 +128,8 @@ def iconvit_damnit(filename):
 def sedit_damnit(filename):
     """
     Some dat files have useless lines to make my life difficult.
+
+    filename -- the file to run sed on
     """
     sed_args = 'sed -i -r "/HHHHHT.*APS1.*ISSUE.*/d" {0}'.format(filename)
     subprocess.run(sed_args, shell=True)
@@ -127,6 +138,8 @@ def sedit_damnit(filename):
 def copy_dtds(dest_dir):
     """
     copies the DTD files
+
+    dest_dir -- the destination directory for the copied files
     """
     dtd_path = 'DTDs/*'
     cp_args = 'cp -r {0} {1}'.format(dtd_path, dest_dir).strip()
@@ -136,6 +149,11 @@ def copy_dtds(dest_dir):
 def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
     """
     Print the dictionary out to an xml file
+
+    dict_for_xml -- the dictionary we're using to create the XML file
+    wku -- the PRDN of the patent which becomes the name of the created XML file
+    out_directory -- directory where the XML file is going to
+    mod_out_directory -- directory where the XML file with inventors removed is going to
     """
     inventor_path = './/inventors'
     text_to_file = xmltodict.unparse(dict_for_xml, pretty=True)
@@ -167,6 +185,9 @@ def create_xml_file(dict_for_xml, wku, out_directory, mod_out_directory):
 
 def convert_to_xml(dat_files):
     """
+    Converts the USPTO dat files to XML files
+
+    dat_files -- the files to convert including path information
     """
     xml_path = 'xml_files/'
     modified_xml_path = 'modified_xml_files/'
