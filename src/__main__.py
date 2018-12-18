@@ -8,7 +8,7 @@ import sys
 THIS_DIR = os.path.dirname(__file__)
 
 number_of_processes = int(sys.argv[1])
-dat_path = THIS_DIR + '../dat_files/'
+dat_path = THIS_DIR + '/../dat_files/'
 dat_files = glob.glob(dat_path + '*')
 directories_list = split_seq(dat_files, number_of_processes)
 procs = []
