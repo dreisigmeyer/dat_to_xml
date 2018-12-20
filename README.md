@@ -1,5 +1,5 @@
-USPTO dat files for granted patents 1971-2001 are converted to XML documents.
-
+USPTO dat files for granted patents 1971-2001 are converted to XML documents.  
+See also the README for **shared_python_code**.
 
 ## Python environment
 This was designed using a standard Anaconda Python 3 installation:
